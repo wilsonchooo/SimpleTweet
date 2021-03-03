@@ -3,6 +3,7 @@ package com.codepath.apps.restclienttemplate;
 import android.content.Context;
 import android.content.Intent;
 import android.text.Layout;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,10 @@ import com.codepath.apps.restclienttemplate.models.Tweet;
 
 import org.parceler.Parcels;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder>{
     public interface OnClickListener
@@ -78,17 +82,43 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView tvBody;
         TextView tvScreenName;
         RelativeLayout container;
+        TextView tvCreatedAt;
+        TextView tvHandle;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivProfileImage=itemView.findViewById(R.id.ivProfileImage);
             tvBody=itemView.findViewById(R.id.tvBody);
             tvScreenName=itemView.findViewById(R.id.tvScreenName);
             container = itemView.findViewById(R.id.container);
+            tvCreatedAt = itemView.findViewById(R.id.tvCreatedAt);
+            tvHandle=itemView.findViewById(R.id.tvHandle);
+            //created at textview
+        }
+
+        // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
+        public String getRelativeTimeAgo(String rawJsonDate) {
+            String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+            SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+            sf.setLenient(true);
+
+            String relativeDate = "";
+            try {
+                long dateMillis = sf.parse(rawJsonDate).getTime();
+                relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
+                        System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return relativeDate;
         }
 
         public void bind(final Tweet tweet){
             tvBody.setText(tweet.body);
             tvScreenName.setText(tweet.user.screenName);
+            tvCreatedAt.setText(getRelativeTimeAgo(tweet.createdAt)); //parse created at
+            tvHandle.setText("@"+tweet.user.name);
+
             tvBody.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -102,12 +132,13 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(context,tweet.body,Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context,tweet.body,Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(context,DetailActivity.class);
                     i.putExtra("TweetAccName",tweet.user.name);
                     i.putExtra("Description",tweet.body);
                     i.putExtra("ProfilePicture",tweet.user.profileImageUrl);
                     i.putExtra("Handle",tweet.user.screenName);
+                    i.putExtra("CreatedAt",getRelativeTimeAgo(tweet.createdAt));
 
                     Log.i("help","yikes "+tweet.media.ImageUrl1);
                     i.putExtra("ImageUrl",tweet.media.ImageUrl1);
