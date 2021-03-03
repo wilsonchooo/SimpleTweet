@@ -40,6 +40,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 ## Notes
 
 Describe any challenges encountered while building the app.
+I had trouble parsing the json in order to find the media data to get the images and the video to load onto the detailed view. 
 
 ## Open-source libraries used
 
