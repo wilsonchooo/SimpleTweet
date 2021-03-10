@@ -140,6 +140,9 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                     i.putExtra("Handle",tweet.user.screenName);
                     i.putExtra("CreatedAt",getRelativeTimeAgo(tweet.createdAt));
 
+
+
+
                     Log.i("help","yikes "+tweet.media.ImageUrl1);
                     i.putExtra("ImageUrl",tweet.media.ImageUrl1);
 

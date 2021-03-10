@@ -3,38 +3,51 @@ package com.codepath.apps.restclienttemplate.models;
 import android.media.Image;
 import android.util.Log;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.List;
 
+@Parcel
+@Entity
 public class Media {
-    public String VideoUrl;
+
+    public Media (){}
     public String ImageUrl1;
-    public String ImageUrl2;
-    public String ImageUrl3;
-    public String ImageUrl4;
     public String MediaID;
+
     public int NumberOfImages = 1;
 
     public static Media fromJson(JSONObject jsonObject ) throws JSONException {
         Media media = new Media();
 
         String TempImageUrl1 = "";
-        String TempImageUrl2 = "";
-        String TempImageUrl3 = "";
-        String TempImageUrl4 = "";
         int number;
         JSONArray mediaarray;
         JSONObject temp;
         if (jsonObject.has("media")) {
             mediaarray = jsonObject.getJSONArray("media");
             TempImageUrl1 = mediaarray.getJSONObject(0).getString("media_url_https");
+            Log.i("what",TempImageUrl1);
             media.MediaID = mediaarray.getJSONObject(0).getString("id_str");
             media.ImageUrl1 = TempImageUrl1;
         }
         return media;
+    }
+
+    public static List<Media> fromJsonTweetArray(List<Tweet> tweetsFromNetwork){
+        List<Media> medias = new ArrayList<>();
+        for(int i=0;i<tweetsFromNetwork.size();i++){
+            medias.add(tweetsFromNetwork.get(i).media);
+        }
+        return medias;
     }
 }
 
